@@ -2,6 +2,16 @@
 #define _QUEUE_H
 
 /*
+ * node_t - Node type
+ *
+ * A node is a element in a FIFO queue implemented using linked list. Each node 
+ * holds a data item and a pointer to the next node.
+ *
+ * Apart from delete and iterate operations, all operations should be O(1).
+ */
+typedef struct node node_t;
+
+/*
  * queue_t - Queue type
  *
  * A queue is a FIFO data structure. Data items are enqueued one after the
