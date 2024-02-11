@@ -4,6 +4,7 @@
 
 #include "queue.h"
 
+typedef struct node node_t;
 struct node
 {
 	void *data;
@@ -54,22 +55,23 @@ int queue_enqueue(queue_t queue, void *data)
 		return -1;
 	}
 	node_t *node_next = malloc(sizeof(node_t));
-	if (node_next == NULL)
+	if (node_next != NULL)
 	{
-		return -1;
+		node_next->data = data;
+		node_next->next = NULL;
 	}
-	node_next->data = data;
-	node_next->next = NULL;
 
 	if (queue->head == NULL)
 	{
+		queue->head = node_next;
 		queue->tail = node_next;
 	}
 	else
 	{
 		queue->tail->next = node_next;
+		queue->tail = node_next;
 	}
-	queue->head = node_next;
+	queue->tail = node_next;
 
 	queue->size++;
 	return 0;
@@ -84,7 +86,7 @@ int queue_dequeue(queue_t queue, void **data)
 	}
 
 	*data = queue->head->data;
-	node_t *temp = queue->head;
+	node_t *current = queue->head;
 	queue->head = queue->head->next;
 
 	if (queue->head == NULL)
@@ -92,7 +94,7 @@ int queue_dequeue(queue_t queue, void **data)
 		queue->tail = NULL;
 	}
 
-	free(temp);
+	free(current);
 	queue->size--;
 	return 0;
 }
@@ -115,15 +117,20 @@ int queue_delete(queue_t queue, void *data)
 			if (previous == NULL)
 			{
 				queue->head = current->next;
+				if (queue->head == NULL)
+				{
+					// Queue is empty
+					queue->tail = NULL;
+				}
 			}
 			else
 			{
 				previous->next = current->next;
-			}
-
-			if (current == queue->tail)
-			{
-				queue->tail = previous;
+				if (current->next == NULL)
+				{
+					// Node to delete is the tail
+					queue->tail = previous;
+				}
 			}
 
 			free(current);
@@ -147,11 +154,13 @@ int queue_iterate(queue_t queue, queue_func_t func)
 	}
 
 	node_t *current = queue->head;
-	for (; current != NULL; current = current->next)
+	node_t *next = current->next;
+	for (; current != NULL; current = next)
 	{
+		next = current->next;
 		func(queue, current->data);
 	}
-
+	free(current);
 	return 0;
 }
 
