@@ -13,7 +13,6 @@ struct node
 
 struct queue
 {
-	/* TODO Phase 1 */
 	node_t *head;
 	node_t *tail;
 	int size;
@@ -21,7 +20,9 @@ struct queue
 
 queue_t queue_create(void)
 {
-	/* TODO Phase 1 */
+	/* Allocates memory:
+		- If fail, return null
+		- If success, set head and tail pointers to null (queue empty size=0) */
 	queue_t queue = malloc(sizeof(struct queue));
 	if (queue == NULL)
 	{
@@ -37,41 +38,44 @@ queue_t queue_create(void)
 
 int queue_destroy(queue_t queue)
 {
-	/* TODO Phase 1 */
+	/* Check if there is no queue or queue empty, return error */
 	if (queue == NULL || queue->size != 0)
 	{
 		return -1;
 	}
 
-	free(queue);
+	free(queue); // free memory if there is queue but empty
 	return 0;
 }
 
 int queue_enqueue(queue_t queue, void *data)
 {
-	/* TODO Phase 1 */
+	/* Check if there is no queue or invalid data, return error */
 	if (queue == NULL || data == NULL)
 	{
 		return -1;
 	}
+	
 	node_t *node_next = malloc(sizeof(node_t));
+	/* Check if malloc successfully allocated memory */
 	if (node_next != NULL)
 	{
 		node_next->data = data;
 		node_next->next = NULL;
 	}
 
-	if (queue->head == NULL)
+	/* if queue empty, set head and tail pointers to node_next */
+	if (queue->head == NULL && queue->tail == NULL)
 	{
-		queue->head = node_next;
-		queue->tail = node_next;
+		queue->head = queue->tail = node_next;
 	}
+	/* or set next pointer of tail node to node_next
+		and then update tail pointer to node_next make it last node */
 	else
 	{
 		queue->tail->next = node_next;
 		queue->tail = node_next;
 	}
-	queue->tail = node_next;
 
 	queue->size++;
 	return 0;
@@ -79,17 +83,19 @@ int queue_enqueue(queue_t queue, void *data)
 
 int queue_dequeue(queue_t queue, void **data)
 {
-	/* TODO Phase 1 */
+	/* Check if there is no queue/ invalid data/ queue no node, return error */
 	if (queue == NULL || data == NULL || queue->size == 0)
 	{
 		return -1;
 	}
 
-	*data = queue->head->data;
+	/* Set node to dequeue and data to dequeue node data */
 	node_t *current = queue->head;
-	queue->head = queue->head->next;
+	*data = current->data;
 
-	if (queue->head == NULL)
+	/* update head */
+	queue->head = current->next;
+	if (queue->head == NULL) // incase afrer dequeue, queue is empty
 	{
 		queue->tail = NULL;
 	}
@@ -101,7 +107,7 @@ int queue_dequeue(queue_t queue, void **data)
 
 int queue_delete(queue_t queue, void *data)
 {
-	/* TODO Phase 1 */
+	/* Check if there is no queue or invalid data, return error */
 	if (queue == NULL || data == NULL)
 	{
 		return -1;
@@ -114,22 +120,19 @@ int queue_delete(queue_t queue, void *data)
 	{
 		if (current->data == data)
 		{
-			if (previous == NULL)
+			if (previous == NULL) // check if this is head node
 			{
-				queue->head = current->next;
+				queue->head = current->next; // Update head
 				if (queue->head == NULL)
 				{
-					// Queue is empty
-					queue->tail = NULL;
+					queue->tail = NULL; // Queue is empty
 				}
 			}
 			else
 			{
-				previous->next = current->next;
 				if (current->next == NULL)
 				{
-					// Node to delete is the tail
-					queue->tail = previous;
+					queue->tail = previous; // Node to delete is the tail
 				}
 			}
 
@@ -138,16 +141,16 @@ int queue_delete(queue_t queue, void *data)
 			return 0;
 		}
 
+		// Update pointers' position
 		previous = current;
 		current = current->next;
 	}
-
 	return -1;
 }
 
 int queue_iterate(queue_t queue, queue_func_t func)
 {
-	/* TODO Phase 1 */
+	/* Check if there is no queue or invalid func, return error */
 	if (queue == NULL || func == NULL)
 	{
 		return -1;
@@ -166,7 +169,6 @@ int queue_iterate(queue_t queue, queue_func_t func)
 
 int queue_length(queue_t queue)
 {
-	/* TODO Phase 1 */
 	if (queue == NULL)
 	{
 		return -1;
