@@ -1,6 +1,6 @@
 # Target library
 lib := libuthread.a
-objs := queue.o uthread.o context.o
+objs := queue.o uthread.o context.o sem.o
 
 
 ## TODO: Phase 1
