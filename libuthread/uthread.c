@@ -29,14 +29,16 @@ struct uthread_tcb *uthread_current(void)
 
 void uthread_yield(void)
 {
-	/* TODO Phase 2 */
-	struct uthread_tcb *previous_thread = current_thread;
-	if (queue_dequeue(ready, (void **)&current_thread) == 0)
-	{
-		previous_thread->state = READY;
-		queue_enqueue(ready, previous_thread);
-		uthread_ctx_switch(&previous_thread->context, &current_thread->context);
-	}
+    /* TODO Phase 2 */
+    struct uthread_tcb *previous_thread = current_thread;
+    if (queue_dequeue(ready, (void **)&current_thread) == 0)
+    {
+        if (previous_thread->state == READY)
+        {
+            queue_enqueue(ready, previous_thread);
+        }
+        uthread_ctx_switch(&previous_thread->context, &current_thread->context);
+    }
 }
 
 void uthread_exit(void)
@@ -118,13 +120,7 @@ void uthread_block(void)
 	if (current_thread != NULL)
 	{
 		current_thread->state = BLOCK;
-		struct uthread_tcb *next_thread;
-		struct uthread_tcb *prev_thread = current_thread;
-		if (queue_dequeue(ready, (void **)&next_thread) == 0)
-		{
-			current_thread = next_thread;
-			uthread_ctx_switch(&prev_thread->context, &current_thread->context);
-		}
+		uthread_yield();
 	}
 }
 
