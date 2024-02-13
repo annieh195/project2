@@ -38,8 +38,8 @@ queue_t queue_create(void)
 
 int queue_destroy(queue_t queue)
 {
-	/* Check if there is no queue or queue empty, return error */
-	if (queue == NULL || queue->size != 0)
+	/* Check if there is no queue or queue not empty, return error */
+	if (queue == NULL || queue->size > 0)
 	{
 		return -1;
 	}
