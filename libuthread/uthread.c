@@ -29,7 +29,8 @@ struct uthread_tcb *uthread_current(void)
 
 void uthread_yield(void)
 {
-    /* TODO Phase 2 */
+    /* TODO Phase 2 */\
+	preempt_disable();
     struct uthread_tcb *previous_thread = current_thread;
     if (queue_dequeue(ready, (void **)&current_thread) == 0)
     {
@@ -39,6 +40,7 @@ void uthread_yield(void)
         }
         uthread_ctx_switch(&previous_thread->context, &current_thread->context);
     }
+	preempt_enable();
 }
 
 void uthread_exit(void)
@@ -52,6 +54,7 @@ void uthread_exit(void)
 int uthread_create(uthread_func_t func, void *arg)
 {
 	/* TODO Phase 2 */
+	preempt_disable();
 	struct uthread_tcb *new_thread = malloc(sizeof(struct uthread_tcb));
 	if (new_thread == NULL)
 	{
@@ -68,13 +71,15 @@ int uthread_create(uthread_func_t func, void *arg)
 	uthread_ctx_init(&new_thread->context, new_thread->stack, func, arg);
 	new_thread->state = READY;
 	queue_enqueue(ready, new_thread);
+	preempt_enable();
 	return 0;
 }
 
 int uthread_run(bool preempt, uthread_func_t func, void *arg)
 {
 	/* TODO Phase 2 */
-	(void)preempt;
+	//(void)preempt;
+	preempt_start(preempt);
 	ready = queue_create();
 	if (ready == NULL)
 	{
@@ -99,6 +104,7 @@ int uthread_run(bool preempt, uthread_func_t func, void *arg)
 	uthread_ctx_init(&current_thread->context, current_thread->stack, func, arg);
 	current_thread->state = RUN;
 	uthread_create(func, arg); //
+	preempt_enable();
 	while (1)
 	{
 		if (queue_length(ready) == 0 && current_thread->state == ZOMBIE)
@@ -107,7 +113,11 @@ int uthread_run(bool preempt, uthread_func_t func, void *arg)
 		}
 		uthread_yield();
 	}
-
+	preempt_disable();
+	
+	if (preempt == true) {
+        preempt_stop();
+  	}
 	queue_destroy(ready);
 	free(current_thread->stack);
 	free(current_thread);
