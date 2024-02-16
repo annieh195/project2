@@ -6,18 +6,22 @@ objs := queue.o uthread.o context.o sem.o preempt.o
 ## TODO: Phase 1
 CC		:= gcc
 CFLAGS	:= -Wall -Wextra -Werror
-#CFLAGS	+= -g
+CFLAGS	+= -g
+
+ifneq ($(V),1)
+Q = @
+endif
 
 all: $(lib)
 
 $(lib): $(objs)
 	@echo "CC	$@"
-	@ar rcs $@ $^
+	$(Q)ar rcs $@ $^
 
 %.o: %.c %.h
 	@echo "CC	$@"
-	@$(CC) $(CFLAGS) -c -o $@ $<
+	$(Q)$(CC) $(CFLAGS) -c -o $@ $<
 
 clean:
 	@echo "CLEAN"
-	@rm -f $(lib) $(objs)
+	$(Q)rm -f $(lib) $(objs)
