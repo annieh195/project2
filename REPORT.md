@@ -1,5 +1,4 @@
 # Project #2 - User-level Thread Library
-
 ## Summary
 
 # Phase 1 `queue API`
@@ -52,11 +51,10 @@ and tracking the size of the queue.
 - `queue_length`: 
     - First, we check if the `queue` is `NULL`. If so, return `error`.
     - Then, return the `size of the queue`.
-
-# Phase 2
+# Phase 2 `uthread API`
 `state_t` enum represents 4 states of a thread in the thread library.
 `uthread_tcb struct` contains a stack pointer (`void *stack`), `state_t state`,
-and thread context.
+and thread `context`.
 ### Functions
 - `uthread_current`: We return the currently running thread.
 - `uthread_yield`: Switches from the current thread to the next ready thread.
@@ -82,7 +80,7 @@ and thread context.
     - Then, we set up the current thread (similar to creating a new thread).
     - And then, We run the current thread until all threads are done.
     - Lastly, we use `free` to deallocate its stack and the thread control block
-# Phase 3
+# Phase 3 `semaphore API`
 - `uthread_block`: Block the current thread.
     - First, we check if `current thread` is not `NULL`. 
     - If so, we set thread's state to `BLOCK` and then yield to the next thread.
@@ -90,6 +88,6 @@ and thread context.
     - First, we check if the `thread` is not `NULL` and in `BLOCK` state.
     - If so, we change its state to `READY`.
     - Lastly, we re-enqueue it into the `ready queue`.
-# Phase 4
+# Phase 4 `preemption`
 
 # Resources
