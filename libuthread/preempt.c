@@ -14,16 +14,18 @@
  * 100Hz is 100 times per second
  */
 #define HZ 100
-#define FREQUENCY (HZ*100)
+#define TIMER (1000000/ HZ);
+
 
 struct sigaction signal_action;
 struct sigaction previous_signal_action;
-
 struct itimerval previous_timer;
 struct itimerval current_timer;
 
 bool preemptStatus = 0;
 
+/*a signal handler that receives alarm signals.
+If it receives SIGVTALRM, then the uthread would yield.	*/
 void signal_handler(int sigNum)
 {
 	if (sigNum == SIGVTALRM){
@@ -44,6 +46,7 @@ void preempt_disable(void)
 
 }
 
+// preemption is enabled through unblocking the SIGVTALRM
 void preempt_enable(void)
 {
 	/* TODO Phase 4 */
@@ -67,9 +70,9 @@ void preempt_start(bool preempt)
 
 		//set the timer for alarm
 		current_timer.it_interval.tv_sec = 0;
-		current_timer.it_interval.tv_usec = FREQUENCY;
+		current_timer.it_interval.tv_usec = TIMER;
 		current_timer.it_value.tv_sec = 0;
-		current_timer.it_value.tv_usec = FREQUENCY;
+		current_timer.it_value.tv_usec = TIMER;
 
 		setitimer(ITIMER_REAL, &current_timer, &previous_timer);
 		 
@@ -79,7 +82,6 @@ void preempt_start(bool preempt)
 void preempt_stop(void)
 {
 	/* TODO Phase 4 */
-
 	if(preemptStatus){
 		sigaction(SIGVTALRM, &previous_signal_action, NULL);
 		setitimer(ITIMER_REAL, &previous_timer, NULL);
