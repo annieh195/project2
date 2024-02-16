@@ -6,23 +6,28 @@
 #include "private.h"
 
 struct semaphore {
-    /* TODO Phase 3 */
-    int semaphoreCount;
+    size_t semaphoreCount;
     queue_t waiting_Queue;
 };
 
 sem_t sem_create(size_t count)
 {
-    /* TODO Phase 3 */
     struct semaphore *s = malloc(sizeof(struct semaphore));
 
+    // returns null if the semaphore is NULL
     if (s == NULL){
         return NULL;
     }
+
+    // initializes the semaphore internal count and creates the waiting thread
     s->semaphoreCount = count;
     s->waiting_Queue = queue_create();
 
-    
+    // returns null if the queue is null for the semaphore
+    if(s->waiting_Queue == NULL){
+        free(s);
+        return NULL;
+    }
     
     return s;
 }
@@ -30,10 +35,12 @@ sem_t sem_create(size_t count)
 int sem_destroy(sem_t sem)
 {
     /* TODO Phase 3 */
+    // if the semaphore or waiting thread is null, return -1
     if(sem == NULL || sem->waiting_Queue != NULL){
         return -1;
     }
 
+    // destroys the waiting thread and deallocate the semaphore
     queue_destroy(sem->waiting_Queue);
     free(sem);
     return 0;
@@ -46,15 +53,16 @@ int sem_down(sem_t sem)
     }
 
     struct uthread_tcb *current = uthread_current();
-    if(sem->semaphoreCount == 0){
+    while(sem->semaphoreCount == 0){
         queue_enqueue(sem->waiting_Queue, current);
         uthread_block();
     }
+
     sem->semaphoreCount--;
     return 0;
-    /* TODO Phase 3 */
 }
 
+// referenced implementation from
 int sem_up(sem_t sem)
 {
     /* TODO Phase 3 */
@@ -63,13 +71,14 @@ int sem_up(sem_t sem)
         return -1;
     }
 
-    
+    sem->semaphoreCount++;
+
+    // if the waiting list is not empty, will unblock the oldest thread
     if(queue_length(sem->waiting_Queue) > 0){
         struct uthread_tcb *oldest_thread;
         queue_dequeue(sem->waiting_Queue, (void**)&oldest_thread);
         uthread_unblock(oldest_thread);
     }
-    sem->semaphoreCount++;
 
     return 0;
 
