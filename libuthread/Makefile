@@ -27,4 +27,4 @@ $(lib): $(objs)
 
 clean:
 	@echo "CLEAN"
-	@rm -f $(lib) $(objs) $(deps)
+	$(Q)rm -f $(lib) $(objs) $(deps)
