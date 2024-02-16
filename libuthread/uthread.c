@@ -10,16 +10,17 @@
 #include "uthread.h"
 #include "queue.h"
 
-static struct uthread_tcb *current_thread = NULL;
+static struct uthread_tcb *current_thread = NULL; // pointer to current thread
 static queue_t ready;
+
+// Use enum for thread states 
 typedef enum { READY, RUN, BLOCK, ZOMBIE } state_t;
 
 struct uthread_tcb
 {
-	/* TODO Phase 2 */
-	void *stack;
-	state_t state;
-	uthread_ctx_t context;
+	void *stack; // pointer to stack
+	state_t state; // thread state
+	uthread_ctx_t context; // thread context
 };
 
 struct uthread_tcb *uthread_current(void)
@@ -29,14 +30,17 @@ struct uthread_tcb *uthread_current(void)
 
 void uthread_yield(void)
 {
-    /* TODO Phase 2 */\
+    
 	preempt_disable();
+	// saves the current executing TCB to previous thread
     struct uthread_tcb *previous_thread = current_thread;
+
+	/* Dequeue the thread from the ready queue.*/
     if (queue_dequeue(ready, (void **)&current_thread) == 0)
     {
         if (previous_thread->state == READY)
         {
-            queue_enqueue(ready, previous_thread);
+            queue_enqueue(ready, previous_thread); // re-enqueue if still ready
         }
         uthread_ctx_switch(&previous_thread->context, &current_thread->context);
     }
@@ -53,7 +57,6 @@ void uthread_exit(void)
 
 int uthread_create(uthread_func_t func, void *arg)
 {
-	/* TODO Phase 2 */
 	preempt_disable();
 	struct uthread_tcb *new_thread = malloc(sizeof(struct uthread_tcb));
 	if (new_thread == NULL)
@@ -77,8 +80,6 @@ int uthread_create(uthread_func_t func, void *arg)
 
 int uthread_run(bool preempt, uthread_func_t func, void *arg)
 {
-	/* TODO Phase 2 */
-	//(void)preempt;
 	preempt_start(preempt);
 	ready = queue_create();
 	if (ready == NULL)
@@ -86,6 +87,7 @@ int uthread_run(bool preempt, uthread_func_t func, void *arg)
 		return -1;
 	}
 
+	// Set up the current thread
 	current_thread = malloc(sizeof(struct uthread_tcb));
 	if (current_thread == NULL)
 	{
@@ -103,13 +105,15 @@ int uthread_run(bool preempt, uthread_func_t func, void *arg)
 
 	uthread_ctx_init(&current_thread->context, current_thread->stack, func, arg);
 	current_thread->state = RUN;
-	uthread_create(func, arg); //
+	uthread_create(func, arg); // Create the initial thread
 	preempt_enable();
+	// Run schedule loop
 	while (1)
 	{
 		if (queue_length(ready) == 0 && current_thread->state == ZOMBIE)
 		{
-			break;
+			break; /* Exit loop if there is no thread in ready queue and current
+					  thread is ZOMBIE */ 
 		}
 		uthread_yield();
 	}
@@ -126,20 +130,20 @@ int uthread_run(bool preempt, uthread_func_t func, void *arg)
 
 void uthread_block(void)
 {
-	/* TODO Phase 3 */
+	/* Check if current thread is not NULL */
 	if (current_thread != NULL)
 	{
-		current_thread->state = BLOCK;
+		current_thread->state = BLOCK; // Set state to BLOCK
 		uthread_yield();
 	}
 }
 
 void uthread_unblock(struct uthread_tcb *uthread)
 {
-	/* TODO Phase 3 */
+	/* Check if thread is not NULL and in BLOCK state */
 	if (uthread != NULL && uthread->state == BLOCK)
 	{
-		uthread->state = READY;
-		queue_enqueue(ready, uthread);
+		uthread->state = READY; // Set state to READY
+		queue_enqueue(ready, uthread); // Re-enqueue it
 	}
 }
