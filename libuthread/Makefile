@@ -6,7 +6,7 @@ objs := queue.o uthread.o context.o sem.o preempt.o
 ## TODO: Phase 1
 CC		:= gcc
 CFLAGS	:= -Wall -Wextra -Werror
-CFLAGS	+= -g
+#CFLAGS	+= -g
 
 all: $(lib)
 
