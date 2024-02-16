@@ -130,10 +130,7 @@ int queue_delete(queue_t queue, void *data)
 			}
 			else
 			{
-				if (current->next == NULL)
-				{
-					queue->tail = previous; // Node to delete is the tail
-				}
+				previous->next = current->next; // Bypass the curret node
 			}
 
 			free(current);
@@ -163,7 +160,6 @@ int queue_iterate(queue_t queue, queue_func_t func)
 		next = current->next;
 		func(queue, current->data);
 	}
-	free(current);
 	return 0;
 }
 

@@ -82,12 +82,9 @@ void test_queue_dequeue_null(void){
 	TEST_ASSERT(queue_dequeue(q, (void**)&ptr) == -1);
 }
 
-
-
-
 void test_queue_delete(void){
     queue_t q;
-    fprintf(stderr, " TEST queue_delete \n");
+    fprintf(stderr, "*** TEST queue_delete ***\n");
     q = queue_create();
 
     int dataset[] = {1, 2, 3, 4, 5, 6, 7, 8};
@@ -157,13 +154,21 @@ void test_queue_destroy(void){
 int main(void)
 {
 	test_create();
+	printf("\n");
 	test_queue_simple();
+	printf("\n");
 	test_queue_length();
+	printf("\n");
 	test_queue_enqueue_null();
+	printf("\n");
 	test_queue_empty();
+	printf("\n");
 	test_queue_destroy();
+	printf("\n");
 	test_queue_dequeue_null();
+	printf("\n");
 	test_queue_delete();
+	printf("\n");
 	test_iterator();
 
 	return 0;
