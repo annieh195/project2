@@ -88,6 +88,33 @@ and thread `context`.
     - First, we check if the `thread` is not `NULL` and in `BLOCK` state.
     - If so, we change its state to `READY`.
     - Lastly, we re-enqueue it into the `ready queue`.
+- `sem_create`
+  - First, we allocate memory for a new semaphore utilizing `malloc`.
+  - Afterwords, we check to see if it is `NULL`.
+  - Then, we initialized the semaphore internal count and create the waiting
+    thread.
+  - After initializing the variables of the semaphore, we check to see if the
+    the waiting thread to see if it is `NULL`.
+    - If it is NULL, then we deallocate the semaphore.   
+- `sem_destroy`
+  - First, we need check to see if the semaphore is `NULL` or if the waiting
+    queue of threads is `NULL`.
+  - Afterwards, we destroy the waiting queue utilizing `queue_destroy()` and
+    deallocate the semaphore.   
+- `sem_down`
+  - First, we checked to see if the semaphore `NULL`.
+  - Afterwards, we need to also check if the count or resource is `0`
+    - If it is equal to `0`, then we place the current thread into the waiting
+      queue and block it.
+    - Otherwise, we decrement the internal count by `1`.
+- `sem_up`
+  - First, we checked to see if the semaphore `NULL`.
+  - Then we increment the `semaphore` count by `1`.
+  - When approaching on how the semaphore releases a resource, first we checked
+    to see if the waiting queue is not empty
+    - If it is not empty, we take the oldest thread and `dequeue` from
+      the waiting queue.
+    - Lastly we unblock the thread.
 # Phase 4 `preemption`
 
 # Resources
