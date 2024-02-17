@@ -51,7 +51,6 @@ and tracking the size of the queue.
 - `queue_length`: 
     - First, we check if the `queue` is `NULL`. If so, return `error`.
     - Then, return the `size of the queue`.
-### Testing
 # Phase 2 `uthread API`
 `state_t` enum represents 4 states of a thread in the thread library.
 `uthread_tcb struct` contains a stack pointer (`void *stack`), `state_t state`,
