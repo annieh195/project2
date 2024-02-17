@@ -39,7 +39,6 @@ void test_queue_simple(void)
 
 /*empty queue test*/
 void test_queue_empty(void){
-
     queue_t q;
     fprintf(stderr, "*** TEST queue_empty ***\n");
 
@@ -47,10 +46,9 @@ void test_queue_empty(void){
     int length = queue_length(q);
 
     TEST_ASSERT(length == 0);
-
-
 }
 
+// tests the length of the queue
 void test_queue_length(void){
 	queue_t q;
 	fprintf(stderr, "*** TEST queue_length ***\n");
@@ -64,29 +62,42 @@ void test_queue_length(void){
 
 	int length = queue_length(q);
 	TEST_ASSERT(length == 5);
+
+	fprintf(stderr, "*** TEST queue_length NULL ***\n");
+	TEST_ASSERT(queue_length(NULL) == -1);
 }
 
+// tests queue_enqueue
 void test_queue_enqueue_null(void){
 	queue_t q;
-	fprintf(stderr, "*** TEST queue_enqueue_data ***\n");
+	fprintf(stderr, "*** TEST queue_enqueue_data NULL ***\n");
 	int *data = NULL;
+	int data2 = 5;
+
 	q = queue_create();
 	TEST_ASSERT(queue_enqueue(q, data) == -1);
+
+	fprintf(stderr, "*** TEST queue_enqueue_data ***\n");
+	TEST_ASSERT(queue_enqueue(q, &data2) == 0);
 }
 
+// tests the error case for queue_dequeue
 void test_queue_dequeue_null(void){
 	queue_t q;
-	fprintf(stderr, "*** TEST queue_enqueue_dequeue_data ***\n");
+	fprintf(stderr, "*** TEST queue_dequeue_data NULL ***\n");
 	int *ptr = NULL;
+
 	q = queue_create();
 	TEST_ASSERT(queue_dequeue(q, (void**)&ptr) == -1);
 }
 
+// test the queue_delete
 void test_queue_delete(void){
     queue_t q;
-    fprintf(stderr, "*** TEST queue_delete ***\n");
+    fprintf(stderr, " TEST queue_delete \n");
     q = queue_create();
-
+	
+	int value = 20;
     int dataset[] = {1, 2, 3, 4, 5, 6, 7, 8};
 
     for(unsigned int i = 0; i < sizeof(dataset) / sizeof(dataset[0]); i++){
@@ -98,34 +109,43 @@ void test_queue_delete(void){
     int test = queue_delete(q, element);
     TEST_ASSERT(test == 0);
 	TEST_ASSERT(queue_length(q) == 7);
+
+	fprintf(stderr, " TEST queue_delete NULL \n");
+	queue_destroy(q);
+	TEST_ASSERT(queue_delete(NULL, element) == -1);
+
+	fprintf(stderr, " TEST queue_delete NOT FOUND \n");
+	TEST_ASSERT(queue_delete(NULL, &value) == -1);
 }
 
-/* Callback function that increments items */
-static void iterator_inc(queue_t q, void *data)
+/* function for iterator that decrements items */
+static void iterator_dec(queue_t q, void *data)
 {
     int *a = (int*)data;
-
-    if (*a == 42)
+    if (*a == 7)
         queue_delete(q, data);
     else
-        *a += 1;
+        *a -= 1;
 }
 
+//tests the queue_iterator
 void test_iterator(void)
 {
     queue_t q;
     int data[] = {1, 2, 3, 4, 5, 42, 6, 7, 8, 9};
     size_t i;
 	fprintf(stderr, "*** TEST queue_iterator ***\n");
+
     /* Initialize the queue and enqueue items */
     q = queue_create();
     for (i = 0; i < sizeof(data) / sizeof(data[0]); i++)
         queue_enqueue(q, &data[i]);
 
-    /* Increment every item of the queue, delete item '42' */
-    queue_iterate(q, iterator_inc);
-    TEST_ASSERT(data[0] == 2);
+    /* decrement every item of the queue, delete item '7' */
+    queue_iterate(q, iterator_dec);
+    TEST_ASSERT(data[0] == 0);
     TEST_ASSERT(queue_length(q) == 9);
+	queue_destroy(q);
 }
 
 /*simple queue destroy tester*/
@@ -146,30 +166,22 @@ void test_queue_destroy(void){
 	
 	}
 
+	fprintf(stderr, "*** TEST queue_destroy NULL ***\n");
 	TEST_ASSERT(queue_destroy(q2) == -1);
-
 }
 
 
 int main(void)
 {
 	test_create();
-	printf("\n");
 	test_queue_simple();
-	printf("\n");
 	test_queue_length();
-	printf("\n");
 	test_queue_enqueue_null();
-	printf("\n");
 	test_queue_empty();
-	printf("\n");
 	test_queue_destroy();
-	printf("\n");
 	test_queue_dequeue_null();
-	printf("\n");
 	test_queue_delete();
-	printf("\n");
 	test_iterator();
-
+	
 	return 0;
 }
