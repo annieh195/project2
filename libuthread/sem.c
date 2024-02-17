@@ -67,7 +67,6 @@ int sem_down(sem_t sem)
     return 0;
 }
 
-// referenced implementation from
 int sem_up(sem_t sem)
 {
     //if the semaphore is NULL, return -1
