@@ -1,6 +1,4 @@
 # Project #2 - User-level Thread Library
-## Summary
-
 # Phase 1 `queue API`
 ### Data Structures
 In this phase, we used Single Linked List to implement the queue. 
