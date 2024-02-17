@@ -113,7 +113,7 @@ and thread `context`.
     - If it is not empty, we take the oldest thread and `dequeue` from
       the waiting queue.
     - Lastly we unblock the thread.
-# Phase 4 `preemption`
+# Phase 4 `preemption API`
 ### Functions
 - `signal_handler`
   - When checking for the alarm signal, it would make the thread `yield`.
