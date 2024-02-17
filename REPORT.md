@@ -142,3 +142,8 @@ and thread `context`.
   - **For the uthreads, we implemented `preempt_stop` before `uthread` returns.**
 ### Testing
 # Resources
+- https://www.gnu.org/software/libc/manual/2.36/html_mono/libc.html#Setting-an-Alarm
+- https://www.gnu.org/software/libc/manual/2.36/html_mono/libc.html#Signal-Actions
+- https://www.gnu.org/software/libc/manual/2.36/html_mono/libc.html#Blocking-Signals
+- Synchronization Slides 21
+- Makefile Slides 22
