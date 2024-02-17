@@ -139,6 +139,5 @@ and thread `context`.
   - First we utilized `sigaction` to restore the previous signal handling
   configuration.
   - Then we reverted the timer to its previous state.
-  - **For the uthreads, we implemented `preempt_stop` before `uthread` returns.
-    **
+  - **For the uthreads, we implemented `preempt_stop` before `uthread` returns.**
 # Resources
