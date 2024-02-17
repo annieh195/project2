@@ -2,7 +2,7 @@
 ## Summary
 
 # Phase 1 `queue API`
-### Datastructures
+### Data Structures
 In this phase, we used Single Linked List to implement the queue. 
 - We defined `node struct` that represents a queue node, containing user 
 data and a pointer to the next node.
@@ -51,6 +51,7 @@ and tracking the size of the queue.
 - `queue_length`: 
     - First, we check if the `queue` is `NULL`. If so, return `error`.
     - Then, return the `size of the queue`.
+### Testing
 # Phase 2 `uthread API`
 `state_t` enum represents 4 states of a thread in the thread library.
 `uthread_tcb struct` contains a stack pointer (`void *stack`), `state_t state`,
@@ -119,13 +120,13 @@ and thread `context`.
 ### Functions
 - `signal_handler`
   - When checking for the alarm signal, it would make the thread `yield`.
-- `preempt_disable`: Disables preemption
+- `preempt_disable`: Disables preemption.
   - First, we initialized a `sigset`.
   - Then we utilized `sigprocmask` to block `SIGVTALRM` to disable preemption.
-- `preempt_enable`: Enables preemption
+- `preempt_enable`: Enables preemption.
   - First, we initialized a `sigset`.
   - Then we utilized `sigprocmask` to unblock `SIGVTALRM` to enable preemption.
-- `preempt_start`: Start thread preemption
+- `preempt_start`: Start thread preemption.
   - First, we initialized the preempt Status to what the argument is.
   - Then we initialize a `sigaction` struct.
     - To handle `SIGVTALRM`, we call `signal_handler`.
@@ -135,9 +136,10 @@ and thread `context`.
     - Then we configured the timer to go off in `microseconds`.
   - **For the uthreads, we implemented `preempt_start` at the start of
     `uthread_run()`.**
-- `preempt_stop`: Stops preemption
+- `preempt_stop`: Stops preemption.
   - First we utilized `sigaction` to restore the previous signal handling
   configuration.
   - Then we reverted the timer to its previous state.
   - **For the uthreads, we implemented `preempt_stop` before `uthread` returns.**
+### Testing
 # Resources
