@@ -14,11 +14,14 @@
  * 100Hz is 100 times per second
  */
 #define HZ 100
+//converted HZ to microseconds
 #define TIMER (1000000/ HZ);
 
-
+// initialized sigaction structs
 struct sigaction signal_action;
 struct sigaction previous_signal_action;
+
+// initialized timer structs
 struct itimerval previous_timer;
 struct itimerval current_timer;
 
@@ -33,9 +36,10 @@ void signal_handler(int sigNum)
 	}
 }
 
+// preemption is disabled by blocking the SIGVTALRMN
 void preempt_disable(void)
 {
-	/* TODO Phase 4 */
+
 	if(preemptStatus){
 		sigset_t sigSet;
 		sigemptyset(&sigSet);
@@ -49,7 +53,6 @@ void preempt_disable(void)
 // preemption is enabled through unblocking the SIGVTALRM
 void preempt_enable(void)
 {
-	/* TODO Phase 4 */
 	if(preemptStatus){
 		sigset_t sigSet;
 		sigemptyset(&sigSet);
@@ -60,31 +63,34 @@ void preempt_enable(void)
 
 void preempt_start(bool preempt)
 {
-	/* TODO Phase 4 */
+	// initializes the preempt status
 	preemptStatus = preempt;
+
+	// if the preempt status is false, then preemption is not started
 	if(preemptStatus){
+		// sets up the signal handler
 		signal_action.sa_handler = signal_handler;
 		sigemptyset(&signal_action.sa_mask);
 		signal_action.sa_flags = 0;
 		sigaction(SIGVTALRM, &signal_action, &previous_signal_action);
 
-		//set the timer for alarm
+		// set the timer for alarm
 		current_timer.it_interval.tv_sec = 0;
 		current_timer.it_interval.tv_usec = TIMER;
 		current_timer.it_value.tv_sec = 0;
 		current_timer.it_value.tv_usec = TIMER;
 
-		setitimer(ITIMER_REAL, &current_timer, &previous_timer);
+		setitimer(ITIMER_VIRTUAL, &current_timer, &previous_timer);
 		 
 	}
 }
 
 void preempt_stop(void)
 {
-	/* TODO Phase 4 */
+	// restores the timer and signal action back to the previous state
 	if(preemptStatus){
 		sigaction(SIGVTALRM, &previous_signal_action, NULL);
-		setitimer(ITIMER_REAL, &previous_timer, NULL);
+		setitimer(ITIMER_VIRTUAL, &previous_timer, NULL);
 	}
 }
 
