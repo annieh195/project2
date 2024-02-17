@@ -116,5 +116,29 @@ and thread `context`.
       the waiting queue.
     - Lastly we unblock the thread.
 # Phase 4 `preemption`
-
+### Functions
+- `signal_handler`
+  - When checking for the alarm signal, it would make the thread `yield`.
+- `preempt_disable`: Disables preemption
+  - First, we initialized a `sigset`.
+  - Then we utilized `sigprocmask` to block `SIGVTALRM` to disable preemption.
+- `preempt_enable`: Enables preemption
+  - First, we initialized a `sigset`.
+  - Then we utilized `sigprocmask` to unblock `SIGVTALRM` to enable preemption.
+- `preempt_start`: Start thread preemption
+  - First, we initialized the preempt Status to what the argument is.
+  - Then we initialize a `sigaction` struct.
+    - To handle `SIGVTALRM`, we call `signal_handler`.
+    - Then we set up and utilized `sigaction()` to register `SIGVTALRM`
+      and specified the action to be taken.
+  - We also initialized `itimerval` structs to help set the timer and alarm.
+    - Then we configured the timer to go off in `microseconds`.
+  - **For the uthreads, we implemented `preempt_start` at the start of
+    `uthread_run()`.**
+- `preempt_stop`: Stops preemption
+  - First we utilized `sigaction` to restore the previous signal handling
+  configuration.
+  - Then we reverted the timer to its previous state.
+  - **For the uthreads, we implemented `preempt_stop` before `uthread` returns.
+    **
 # Resources
