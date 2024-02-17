@@ -139,6 +139,12 @@ and thread `context`.
   - Then we reverted the timer to its previous state.
   - **For the uthreads, we implemented `preempt_stop` before `uthread` returns.**
 ### Testing
+To test preemption, we are running a test with three separate threads
+- We start with `Thread 1`, it will immediately starts `Thread 2`.
+- `Thread 1` completes before Thread 2 starts:
+    - After `Thread 1` completes its execution, `Thread 2` starts.
+- Similarly, `Thread 2` creates `Thread 3` and then prints "thread2".
+- After completing its execution, `Thread 3` starts and prints "thread3".
 # Resources
 - https://www.gnu.org/software/libc/manual/2.36/html_mono/libc.html#Setting-an-Alarm
 - https://www.gnu.org/software/libc/manual/2.36/html_mono/libc.html#Signal-Actions
